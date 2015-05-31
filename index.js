@@ -119,6 +119,9 @@ var sanitize = function(s) {
   return s.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
 
+//install
+require('./install')(app);
+
 apps.forEach(function(appName, i) {
   var app = koa();
   var appPath = path.join(APP_PATH, appName)
