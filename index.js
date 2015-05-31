@@ -47,15 +47,18 @@ function init(app, options) {
   }));
 }
 
-
+var apps = [],
+  port;
 var argv = process.argv;
 
-var apps = argv[2].split(',');
-
-var port = argv[3];
-if (port) {
-  port = port.split(',');
+if (argv.length > 2) {
+  apps = argv[2].split(',');
+  port = argv[3];
+  if (port) {
+    port = port.split(',');
+  }
 }
+
 var domain = process.env.DOMAIN;
 global.DOMAIN = domain || 'nyouhui.com';
 
@@ -120,7 +123,7 @@ var sanitize = function(s) {
 }
 
 //install
-require('./install')(app);
+require('./install');
 
 apps.forEach(function(appName, i) {
   var app = koa();
