@@ -72,7 +72,7 @@ module.exports = function(grunt) {
           dir: "dist/js/temp",
           optimize: "none",
           keepBuildDir: false,
-          // mainConfigFile: "config.js",
+          mainConfigFile: "config.js",
           paths: {
             jquery: "libs/client/jquery-1.11.1",
             underscore: "libs/client/underscore",

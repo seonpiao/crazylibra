@@ -1,0 +1,14 @@
+#!/bin/bash
+
+git_url=$1
+app_name=$2
+
+if [ "$app_name" = "" ]; then
+  app_name=`echo $git_url | sed 's/^.*\///' | sed 's/\..*$//'`
+fi
+
+echo $app_name
+
+mkdir -p apps/$app_name
+cd apps/$app_name
+git clone $git_url .

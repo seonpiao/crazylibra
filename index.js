@@ -9,6 +9,7 @@ var body = require('koa-body');
 var resetctx = require('./libs/server/resetctx');
 var response = require('./libs/server/response');
 var staticServe = require('koa-static');
+var co = require('co');
 
 var APP_PATH = path.join(__dirname, 'apps');
 
@@ -122,14 +123,20 @@ var sanitize = function(s) {
   return s.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
 
-//install
-require('./install');
+function isGeneratorFunction(obj) {
+  return obj && obj.constructor && 'GeneratorFunction' == obj.constructor.name;
+}
 
-apps.forEach(function(appName, i) {
+co(function*() {
+  for (var i = 0; i < apps.length; i++) {
+    var appName = apps[i];
   var app = koa();
   var appPath = path.join(APP_PATH, appName)
   var appConfig = require(path.join(appPath, 'config.js'));
-  if (_.isFunction(appConfig)) {
+    if (isGeneratorFunction(appConfig)) {
+      appConfig =
+        yield appConfig(app);
+    } else if (_.isFunction(appConfig)) {
     appConfig = appConfig(app);
   }
   var pagePath = path.join(appPath, 'pages');
@@ -158,4 +165,7 @@ apps.forEach(function(appName, i) {
   }
   logger.info('App[' + appName + '] listening: ' + appPort);
   app.listen(appPort);
+  }
+})(function() {
+  // process.exit(0);
 });
