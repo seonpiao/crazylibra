@@ -1,0 +1,34 @@
+extends ../../layouts/index
+
+block append title
+
+block append meta
+
+block append stylesheet
+  link(href='/plugins/datatables/dataTables.bootstrap.css', rel='stylesheet', type='text/css')
+
+block append headjs
+
+block append content
+  // Main content
+  section.content
+    div
+      - var data = result.data[result.db][result.collection];
+      - var schema = result._data[result.config.schema.db][result.config.schema.collection];
+      - var params = {};
+      - try{params = JSON.parse(schema.params)}catch(e){}
+      - var options = {fields:schema.fields}
+      - for(var key in params){options[key] = params[key]}
+      +manage_table(data,options)
+      if !params.readonly
+        .form-group
+          a.btn.btn-primary(href="/crud/" + result.db + "/" + result.collection + "/create") 新建
+    +manage_box()
+
+block append pluginjs
+  // DATA TABES SCRIPT
+  script(src='/plugins/datatables/jquery.dataTables.js')
+  script(src='/plugins/datatables/dataTables.bootstrap.js')
+
+block append footjs
+  script(type="text/javascript",src="//static.nyouhui.com/dist/js/manage/crud.min.073c3b4a6575a1ad.js")
