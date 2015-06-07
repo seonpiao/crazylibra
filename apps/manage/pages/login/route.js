@@ -1,7 +1,6 @@
 var Mongo = require('../../../../libs/server/mongodb');
 var thunkify = require('thunkify');
 var jwt = require('jsonwebtoken');
-var captchapng = require('captchapng');
 var tokenGenerator = require('random-token');
 var crypto = require('crypto');
 
