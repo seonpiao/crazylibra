@@ -130,42 +130,44 @@ function isGeneratorFunction(obj) {
 co(function*() {
   for (var i = 0; i < apps.length; i++) {
     var appName = apps[i];
-  var app = koa();
-  var appPath = path.join(APP_PATH, appName)
-  var appConfig = require(path.join(appPath, 'config.js'));
+    var app = koa();
+    var appPath = path.join(APP_PATH, appName)
+    var appConfig = require(path.join(appPath, 'config.js'));
+    console.log(appPath)
     if (isGeneratorFunction(appConfig)) {
       appConfig =
         yield appConfig(app);
     } else if (_.isFunction(appConfig)) {
-    appConfig = appConfig(app);
-  }
-  var pagePath = path.join(appPath, 'pages');
-  var pageNames = fs.readdirSync(pagePath);
-  init(app, {
-    appPath: appPath,
-    appConfig: appConfig
-  });
-  pageNames.forEach(function(pageName) {
-    var routePath = path.join(pagePath, pageName, 'route.js');
-    if (fs.existsSync(routePath)) {
-      var route = require(routePath);
-      route(app, pageName, appConfig);
-    } else {
-      app.route('/' + pageName).all(function*(next) {
-        this.result = {};
-        this.global.girlid = 0;
-        this.global.page = pageName;
-        this.template = pageName + '/index';
-      });
+      appConfig = appConfig(app);
     }
-  });
-  var appPort = appConfig.port;
-  if (port && port[i]) {
-    appPort = port[i];
+    var pagePath = path.join(appPath, 'pages');
+    var pageNames = fs.readdirSync(pagePath);
+    init(app, {
+      appPath: appPath,
+      appConfig: appConfig
+    });
+    pageNames.forEach(function(pageName) {
+      var routePath = path.join(pagePath, pageName, 'route.js');
+      if (fs.existsSync(routePath)) {
+        var route = require(routePath);
+        route(app, pageName, appConfig);
+      } else {
+        app.route('/' + pageName).all(function*(next) {
+          this.result = {};
+          this.global.girlid = 0;
+          this.global.page = pageName;
+          this.template = pageName + '/index';
+        });
+      }
+    });
+    var appPort = appConfig.port;
+    if (port && port[i]) {
+      appPort = port[i];
+    }
+    logger.info('App[' + appName + '] listening: ' + appPort);
+    app.listen(appPort);
   }
-  logger.info('App[' + appName + '] listening: ' + appPort);
-  app.listen(appPort);
-  }
-})(function() {
-  // process.exit(0);
+})(function(err) {
+  console.log(err)
+    // process.exit(0);
 });
